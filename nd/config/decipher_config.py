@@ -17,3 +17,6 @@ class UgaHebSmallNoSpe:
     num_rounds: int = 10
     batch_size: int = 500
     n_similar: int = 5
+    capacity: int = 3
+    dropout: float = 0.3
+    warm_up_steps: int = 5

@@ -28,7 +28,7 @@ class DecipherModel(nn.Module):
         self.char_emb = UniversalCharEmbedding(langs, self.char_emb_dim, self.universal_charset_size)
         self.hidden = nn.Sequential(
             nn.Linear(self.hidden_size * 3, self.char_emb_dim),
-            nn.LeakyReLU(negative_slope=0.1))
+            nn.LeakyReLU())
         self.drop = nn.Dropout(self.dropout)
         if self.residual:
             self.controlled_residual = NormControlledResidual(
@@ -37,9 +37,9 @@ class DecipherModel(nn.Module):
 
     def encode(self, id_seqs, lengths):
         inp_enc = self.char_emb(id_seqs, self.lost_lang)  # bs x L x d
-        inp_enc = self.drop(inp_enc)
+        # inp_enc = self.drop(inp_enc)
         bs = inp_enc.shape[0]
-        inp_packed = nn.utils.rnn.pack_padded_sequence(inp_enc, lengths, batch_first=True)
+        inp_packed = nn.utils.rnn.pack_padded_sequence(self.drop(inp_enc), lengths, batch_first=True)
         h = get_zeros(2 * self.num_layers, bs, self.hidden_size)  # NOTE bidirectional, therefore 2
         c = get_zeros(2 * self.num_layers, bs, self.hidden_size)
         h_s_packed, encoding = self.encoder(inp_packed, (h, c))
@@ -75,7 +75,7 @@ class DecipherModel(nn.Module):
             ctx_s = (almt_distr.view(bs, sl, 1) * h_s).sum(dim=1)  # bs x 2d
             # get h_tilde
             cat = torch.cat([ctx_s, ctx_t], dim=-1)
-            h_tilde_rnn = self.hidden(cat)
+            h_tilde_rnn = self.hidden(self.drop(cat))
             if self.residual:
                 ctx_s_emb = (almt_distr.view(bs, sl, 1) * emb_s).sum(dim=1)  # bs x d
                 h_tilde = self.controlled_residual(ctx_s_emb, h_tilde_rnn)

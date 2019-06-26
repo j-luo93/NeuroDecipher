@@ -127,7 +127,6 @@ class GlobalAttention(nn.Module):
 
         self.input_src_size = input_src_size
         self.input_tgt_size = input_tgt_size
-        #self.dropout = 1.0 - math.sqrt(1.0 - dropout)
         self.dropout = dropout
 
         self.Wa = nn.Parameter(torch.Tensor(input_src_size, input_tgt_size))

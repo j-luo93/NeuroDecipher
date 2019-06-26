@@ -17,7 +17,7 @@ def parse_args():
     parser.add_argument('--num_rounds', '-nr', default=3, dtype=int, help='how many rounds of EM')
     parser.add_argument('--num_epochs_per_M_step', '-nm', default=5, dtype=int, help='how many epochs for each M step')
     parser.add_argument('--saved_path', '-sp', dtype=str, help='path to the saved model (and other metadata)')
-    parser.add_argument('--learning_rate', '-lr', dtype=float, default=1e-3, help='initial learning rate')
+    parser.add_argument('--learning_rate', '-lr', dtype=float, default=5e-3, help='initial learning rate')
     parser.add_argument('--num_cognates', '-nc', dtype=int, help='how many cognate pairs')
     parser.add_argument('--inc', dtype=int, default=50, help='increment of cognate pairs after each round')
     parser.add_argument('--warm_up_steps', '-wus', dtype=int, default=1,
