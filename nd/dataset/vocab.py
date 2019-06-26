@@ -49,17 +49,13 @@ def clear_vocabs():
 def build_vocabs(path, lost_lang, known_lang, max_size=0):
     global _COG_LIST
 
-    path = Path(path)
-    if path.suffix != '.cog':
-        raise ValueError(f'Do not recognize this file format {path.suffix}')
-
     assert _COG_LIST is None
     cog_list = CognateList(path, lost_lang, known_lang, max_size=max_size)
 
     for lang in [lost_lang, known_lang]:
         if lang in _VOCABS:
             raise ValueError(f'There already is a vocab for {lang}')
-        _VOCABS[lang] = Vocab(cog_list.get_wordlist(lang), lang)
+        _VOCABS[lang] = _Vocab(cog_list.get_wordlist(lang), lang)
     _COG_LIST = cog_list
 
 
@@ -85,7 +81,7 @@ class Word:
 
 
 @has_properties('lang')
-class Vocab:
+class _Vocab:
 
     def __init__(self, wordlist, lang):
         assert len(wordlist) == len(set(wordlist))  # Make sure they are all unique.
