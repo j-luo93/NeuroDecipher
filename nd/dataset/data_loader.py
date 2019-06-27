@@ -51,14 +51,14 @@ class VocabDataset(WordlistDataset):
 
 
 def _get_item(key, batch):
-    return [record[key] for record in batch]
+    return np.asarray([record[key] for record in batch])
 
 
 def collate_fn(batch):
-    words = np.asarray(_get_item('word', batch))
-    forms = np.asarray(_get_item('form', batch))
-    char_seqs = np.asarray(_get_item('char_seq', batch))
-    id_seqs = np.asarray(_get_item('id_seq', batch))
+    words = _get_item('word', batch)
+    forms = _get_item('form', batch)
+    char_seqs = _get_item('char_seq', batch)
+    id_seqs = _get_item('id_seq', batch)
     lengths, words, forms, char_seqs, id_seqs = sort_all(words, forms, char_seqs, id_seqs)
     lengths = get_tensor(lengths, dtype='l')
     # Trim the id_seqs.
@@ -81,12 +81,12 @@ def _prepare_stats(name, *rows):
     return table
 
 
-@has_properties('lost_lang', 'known_lang', 'training')
+@has_properties('lost_lang', 'known_lang', 'cognate_only')
 class LostKnownDataLoader(DataLoader):
 
-    def __init__(self, lost_lang, known_lang, batch_size, training=True):
+    def __init__(self, lost_lang, known_lang, batch_size, cognate_only=False):
         self.datasets = dict()
-        if training:
+        if not cognate_only:
             self.datasets[self.lost_lang] = VocabDataset(lost_lang)
         else:
             lost_words = get_vocab(lost_lang).cognate_to(known_lang)

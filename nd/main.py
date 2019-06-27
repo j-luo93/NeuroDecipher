@@ -61,7 +61,7 @@ def parse_args():
         np.random.seed(args.seed)
         torch.manual_seed(args.seed)
 
-    create_logger(log_level=args.log_level)
+    create_logger(filepath=args.log_dir + '/log', log_level=args.log_level)
     log_pp(pformat(args))
 
 

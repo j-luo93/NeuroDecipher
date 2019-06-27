@@ -4,6 +4,7 @@ from functools import wraps
 import torch
 
 from arglib import has_properties
+from dev_misc import log_this
 from nd.dataset.vocab import Word
 
 _SAFE_METHODS = {'numel', '__str__', 'data', 'shape', 'unsqueeze'}
@@ -40,20 +41,25 @@ class MagicTensor:
                 assert self.col_words == other.col_words
                 return other.tensor
             except AssertionError:
-                # Have to re-index the my own tensor.
-                my_rows = [self._word2row[w] for w in other.row_words]
-                my_cols = [self._word2col[w] for w in other.col_words]
-                self._row_words = other.row_words
-                self._col_words = other.col_words
-                self._word2row = other._word2row
-                self._word2col = other._word2col
-                self._tensor = self._tensor[my_rows][:, my_cols]
+                self._permute(other)
                 return other.tensor
-
         elif isinstance(other, (float, int)):
             return other
         else:
             raise NotImplementedError(f'Type {type(other)} not supported.')
+
+    @log_this()
+    def _permute(self, other):
+        # Have to re-index the my own tensor. But make sure that the set of words are identical first.
+        assert set(self.row_words) == set(other.row_words)
+        assert set(self.col_words) == set(other.col_words)
+        my_rows = [self._word2row[w] for w in other.row_words]
+        my_cols = [self._word2col[w] for w in other.col_words]
+        self._row_words = other.row_words
+        self._col_words = other.col_words
+        self._word2row = other._word2row
+        self._word2col = other._word2col
+        self._tensor = self._tensor[my_rows][:, my_cols]
 
     def __repr__(self):
         return f'MagicTensor({self.tensor!r})'

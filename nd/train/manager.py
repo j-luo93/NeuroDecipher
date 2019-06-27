@@ -25,7 +25,7 @@ class Manager:
         self._get_trainer_and_evaluator()
 
     def _get_trainer_and_evaluator(self):
-        self.trainer = type(self).trainer_cls(self.model, self.train_data_loader)
+        self.trainer = type(self).trainer_cls(self.model, self.train_data_loader, self.flow_data_loader)
         self.evaluator = Evaluator(self.model, self.eval_data_loader)
         self.evaluator.add_setting(mode='mle', edit=False)
         self.evaluator.add_setting(mode='flow', edit=False)
@@ -39,8 +39,9 @@ class Manager:
 
     def _get_data_loaders(self):
         build_vocabs(self.cog_path, self.lost_lang, self.known_lang)
-        self.train_data_loader = LostKnownDataLoader(self.lost_lang, self.known_lang, self.batch_size)
-        self.eval_data_loader = LostKnownDataLoader(self.lost_lang, self.known_lang, self.batch_size, training=False)
+        self.train_data_loader = LostKnownDataLoader(self.lost_lang, self.known_lang, self.batch_size, cognate_only=False)
+        self.eval_data_loader = LostKnownDataLoader(self.lost_lang, self.known_lang, self.batch_size, cognate_only=True)
+        self.flow_data_loader = self.train_data_loader # NOTE The flow instance shares its entire_batch property with train_data_loader.
 
     def _show_data(self):
         log_pp(self.train_data_loader.stats('train'))

@@ -13,14 +13,15 @@ from nd.flow.flow import Flow
 @use_arguments_as_properties('num_rounds', 'num_epochs_per_M_step', 'saved_path', 'learning_rate', 'log_dir', 'num_cognates', 'inc', 'warm_up_steps', 'capacity', 'save_all', 'eval_interval', 'reg_hyper', 'lost_lang', 'known_lang', 'momentum', 'check_interval')
 class Trainer:
 
-    def __init__(self, model, data_loader):
+    def __init__(self, model, train_data_loader, flow_data_loader):
         self.tracker = Tracker('decipher')
         stage = self.tracker.add_stage('round', self.num_rounds)
         stage.add_stage('E step')
         stage.add_stage('M step', self.num_epochs_per_M_step)
         self.tracker.fix_schedule()
         self.model = model
-        self.data_loader = data_loader
+        self.train_data_loader = train_data_loader
+        self.flow_data_loader = flow_data_loader
         self._init_optimizer()
         self.flow = Flow(self.lost_lang, self.known_lang, self.momentum, self.num_cognates)
         self.tb_writer = SummaryWriter(self.log_dir)
@@ -112,7 +113,7 @@ class Trainer:
             self.flow.warm_up()
         else:
             with torch.no_grad():
-                self.flow.update(self.model, self.data_loader, num_cognates, edit, self.capacity[0])
+                self.flow.update(self.model, self.flow_data_loader, num_cognates, edit, self.capacity[0])
                 self._init_params()
                 self._init_optimizer()
 
@@ -130,7 +131,7 @@ class Trainer:
         self._do_post_M_step(evaluator)
 
     def _M_step_kernel(self):
-        for batch in self.data_loader:
+        for batch in self.train_data_loader:
             self._M_step_kernel_loop(batch)
 
     def _M_step_kernel_loop(self, batch):
