@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 from torch.utils.data import DataLoader, Dataset
+from prettytable import PrettyTable as pt
 
 from arglib import has_properties
 from dev_misc import Map, cache, get_tensor, sort_all
@@ -49,15 +50,15 @@ class VocabDataset(WordlistDataset):
         super().__init__(get_words(lang), lang)
 
 
+def _get_item(key, batch):
+    return [record[key] for record in batch]
+
+
 def collate_fn(batch):
-
-    def get(key):
-        return [record[key] for record in batch]
-
-    words = np.asarray(get('word'))
-    forms = np.asarray(get('form'))
-    char_seqs = np.asarray(get('char_seq'))
-    id_seqs = np.asarray(get('id_seq'))
+    words = np.asarray(_get_item('word', batch))
+    forms = np.asarray(_get_item('form', batch))
+    char_seqs = np.asarray(_get_item('char_seq', batch))
+    id_seqs = np.asarray(_get_item('id_seq', batch))
     lengths, words, forms, char_seqs, id_seqs = sort_all(words, forms, char_seqs, id_seqs)
     lengths = get_tensor(lengths, dtype='l')
     # Trim the id_seqs.
@@ -68,6 +69,16 @@ def collate_fn(batch):
     lang = batch[0].lang
     return Map(
         words=words, forms=forms, char_seqs=char_seqs, id_seqs=id_seqs, lengths=lengths, lang=lang)
+
+
+def _prepare_stats(name, *rows):
+    table = pt()
+    table.field_names = 'lang', 'size'
+    for row in rows:
+        table.add_row(row)
+    table.align = 'l'
+    table.title = name
+    return table
 
 
 @has_properties('lost_lang', 'known_lang', 'training')
@@ -94,7 +105,8 @@ class LostKnownDataLoader(DataLoader):
     def __iter__(self):
         for known_batch in super().__iter__():
             lost_batch = self.datasets[self.lost_lang].entire_batch
-            yield Map(lost=lost_batch, known=known_batch, num_samples=len(known_batch))
+            num_samples = len(known_batch.words)
+            yield Map(lost=lost_batch, known=known_batch, num_samples=num_samples)
 
     @property
     @cache(persist=True)
@@ -104,3 +116,10 @@ class LostKnownDataLoader(DataLoader):
 
     def size(self, lang):
         return len(self.datasets[lang])
+
+    def stats(self, name):
+        row1 = [self.lost_lang, len(self.datasets[self.lost_lang])]
+        row2 = [self.known_lang, len(self.datasets[self.known_lang])]
+        table = _prepare_stats(name, row1, row2)
+        return table
+

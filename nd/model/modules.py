@@ -7,7 +7,7 @@ import torch.nn as nn
 from torch.nn.functional import normalize
 
 from dev_misc import cache
-from nc.dataset.charset import SOW_ID, get_charset
+from nd.dataset.charset import SOW_ID, get_charset
 
 from .lstm_state import LSTMState
 

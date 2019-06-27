@@ -6,7 +6,7 @@ import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 
 from arglib import use_arguments_as_properties
-from dev_misc import Metric, Metrics, Tracker, log_this
+from dev_misc import Map, Metric, Metrics, Tracker, log_this
 from nd.flow.flow import Flow
 
 
@@ -126,9 +126,18 @@ class Trainer:
         batch.update(flow_info)
 
     def _do_M_step(self, evaluator):
+        self._M_step_kernel()
+        self._do_post_M_step(evaluator)
+
+    def _M_step_kernel(self):
         for batch in self.data_loader:
-            self._prepare_flow(batch)
-            self._do_M_step_batch(batch)
+            self._M_step_kernel_loop(batch)
+
+    def _M_step_kernel_loop(self, batch):
+        self._prepare_flow(batch)
+        self._do_M_step_batch(batch)
+
+    def _do_post_M_step(self, evaluator):
         if self.epoch % self.eval_interval == 0:
             self._do_eval(evaluator)
         if self.epoch % self.check_interval == 0:

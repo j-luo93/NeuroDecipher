@@ -122,3 +122,6 @@ class Vocab:
     def cognate_to(self, lang):
         global _COG_LIST
         return np.asarray([w for w in self.words if _COG_LIST.has_cognate(w, lang)])
+
+    def get_word_from_form(self, form):
+        return self._id2word[self._word2id[form]]
