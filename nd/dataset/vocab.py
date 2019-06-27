@@ -89,21 +89,14 @@ class _Vocab:
 
     def _build(self, wordlist):
         self._id2word = list()
-        self._word2id = dict()
+        self._form2id = dict()
         for w in wordlist:
             w = Word(self.lang, w, len(self._id2word))
             self._id2word.append(w)
-            self._word2id[w.form] = len(self._word2id)
+            self._form2id[w.form] = len(self._form2id)
 
     def __len__(self):
         return len(self._id2word)
-
-    def word2id(self, words):
-        if isinstance(words, str):
-            return self._word2id(w)
-        func = np.vectorize(lambda w: self._word2id[w])
-        word_ids = func(words)
-        return word_ids
 
     @property
     @cache(persist=True)
