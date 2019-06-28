@@ -134,9 +134,9 @@ class Trainer:
         for batch in self.train_data_loader:
             self._M_step_kernel_loop(batch)
 
-    def _M_step_kernel_loop(self, batch):
+    def _M_step_kernel_loop(self, batch, update=True):
         self._prepare_flow(batch)
-        self._do_M_step_batch(batch)
+        return self._do_M_step_batch(batch, update=update)
 
     def _do_post_M_step(self, evaluator):
         if self.epoch % self.eval_interval == 0:
@@ -161,13 +161,18 @@ class Trainer:
         self.tb_writer.add_scalar('loss', self.tracker.metrics.loss.mean, global_step=self.epoch)
         self.tracker.clear_metrics()
 
-    def _do_M_step_batch(self, batch):
+    def _do_M_step_batch(self, batch, update=True):
         self.model.train()
         self.optimizer.zero_grad()
-        num_samples = Metric('num_samples', batch.num_samples, 0, report_mean=False)
         # Run it.
         model_ret = self.model(batch)
+        if update:
+            self._do_M_step_batch_update(model_ret, batch)
+        return model_ret
+
+    def _do_M_step_batch_update(self, model_ret, batch):
         # Get the metrics.
+        num_samples = Metric('num_samples', batch.num_samples, 0, report_mean=False)
         metrics = self._analyze_model_return(model_ret, batch)
         # Compute gradients and backprop.
         metrics.loss.mean.backward()
