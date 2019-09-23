@@ -123,4 +123,3 @@ class LostKnownDataLoader(DataLoader):
         row2 = [self.known_lang, len(self.datasets[self.known_lang])]
         table = _prepare_stats(name, row1, row2)
         return table
-

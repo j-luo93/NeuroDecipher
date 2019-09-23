@@ -76,13 +76,13 @@ class Trainer:
             torch.save(ckpt, self.log_dir + '/saved.%s' % suffix)
             logging.info('Finished saving decipher trainer')
 
-    def train(self, evaluator):
+    def train(self, evaluator=None):
         if self.saved_path:
             self.load()
         else:
             self._init_params()
         while not self.tracker.finished:
-            self._train_loop(evaluator)
+            self._train_loop(evaluator=evaluator)
 
     @property
     def round_num(self):
@@ -92,11 +92,11 @@ class Trainer:
     def stage(self):
         return self.tracker.current_stage
 
-    def _train_loop(self, evaluator):
+    def _train_loop(self, evaluator=None):
         if self.stage.name == 'E step':
             self._do_E_step()
         elif self.stage.name == 'M step':
-            self._do_M_step(evaluator)
+            self._do_M_step(evaluator=evaluator)
         else:
             raise RuntimeError(f'Not recognized stage name {self.stage.name}')
         self.tracker.update()
@@ -126,9 +126,9 @@ class Trainer:
         flow_info = self.flow.select(batch.lost.words, batch.known.words)
         batch.update(flow_info)
 
-    def _do_M_step(self, evaluator):
+    def _do_M_step(self, evaluator=None):
         self._M_step_kernel()
-        self._do_post_M_step(evaluator)
+        self._do_post_M_step(evaluator=evaluator)
 
     def _M_step_kernel(self):
         for batch in self.train_data_loader:
@@ -138,8 +138,8 @@ class Trainer:
         self._prepare_flow(batch)
         return self._do_M_step_batch(batch, update=update)
 
-    def _do_post_M_step(self, evaluator):
-        if self.epoch % self.eval_interval == 0:
+    def _do_post_M_step(self, evaluator=None):
+        if self.epoch % self.eval_interval == 0 and evaluator is not None:
             self._do_eval(evaluator)
         if self.epoch % self.check_interval == 0:
             self._do_check()

@@ -2,7 +2,7 @@ import os
 
 from torch.utils.data import DataLoader
 
-from arglib import use_arguments_as_properties
+from arglib import use_arguments_as_properties, add_argument
 from dev_misc import log_pp
 from nd.dataset.data_loader import LostKnownDataLoader
 from nd.dataset.vocab import build_vocabs
@@ -13,11 +13,13 @@ from nd.model.trie import Trie
 from .trainer import Trainer
 
 
-@use_arguments_as_properties('cog_path', 'lost_lang', 'known_lang', 'batch_size')
+@use_arguments_as_properties('cog_path', 'lost_lang', 'known_lang', 'batch_size', 'test_mode')
 class Manager:
 
     model_cls = DecipherModelWithFlow
     trainer_cls = Trainer
+
+    add_argument('--test_mode', dtype=bool, default=False)
 
     def __init__(self):
         self._get_data()
@@ -26,12 +28,14 @@ class Manager:
 
     def _get_trainer_and_evaluator(self):
         self.trainer = type(self).trainer_cls(self.model, self.train_data_loader, self.flow_data_loader)
-        self.evaluator = Evaluator(self.model, self.eval_data_loader)
-        self.evaluator.add_setting(mode='mle', edit=False)
-        self.evaluator.add_setting(mode='flow', edit=False)
-        self.evaluator.add_setting(mode='flow', edit=True)
         log_pp(self.trainer.tracker.schedule_as_tree())
-        log_pp(self.evaluator)
+
+        if not self.test_mode:
+            self.evaluator = Evaluator(self.model, self.eval_data_loader)
+            self.evaluator.add_setting(mode='mle', edit=False)
+            self.evaluator.add_setting(mode='flow', edit=False)
+            self.evaluator.add_setting(mode='flow', edit=True)
+            log_pp(self.evaluator)
 
     def _get_data(self):
         self._get_data_loaders()
@@ -39,13 +43,18 @@ class Manager:
 
     def _get_data_loaders(self):
         build_vocabs(self.cog_path, self.lost_lang, self.known_lang)
-        self.train_data_loader = LostKnownDataLoader(self.lost_lang, self.known_lang, self.batch_size, cognate_only=False)
-        self.eval_data_loader = LostKnownDataLoader(self.lost_lang, self.known_lang, self.batch_size, cognate_only=True)
-        self.flow_data_loader = self.train_data_loader # NOTE The flow instance shares its entire_batch property with train_data_loader.
+        self.train_data_loader = LostKnownDataLoader(
+            self.lost_lang, self.known_lang, self.batch_size, cognate_only=False)
+        if not self.test_mode:
+            self.eval_data_loader = LostKnownDataLoader(
+                self.lost_lang, self.known_lang, self.batch_size, cognate_only=True)
+        # NOTE The flow instance shares its entire_batch property with train_data_loader.
+        self.flow_data_loader = self.train_data_loader
 
     def _show_data(self):
         log_pp(self.train_data_loader.stats('train'))
-        log_pp(self.eval_data_loader.stats('eval'))
+        if not self.test_mode:
+            log_pp(self.eval_data_loader.stats('eval'))
 
     def _get_model(self):
         trie = Trie(self.known_lang)
@@ -55,4 +64,5 @@ class Manager:
             self.model.cuda()
 
     def train(self):
-        self.trainer.train(self.evaluator)
+        evaluator = None if self.test_mode else self.evaluator
+        self.trainer.train(evaluator)
