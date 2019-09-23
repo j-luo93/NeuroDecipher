@@ -61,7 +61,6 @@ def build_vocabs(path, lost_lang, known_lang, max_size=0):
 
 @dataclass(frozen=True, order=True)
 class Word:
-    __slots__ = ['lang', 'form', 'idx']
     lang: str
     form: str
     idx: int

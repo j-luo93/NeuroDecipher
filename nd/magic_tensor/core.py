@@ -68,7 +68,12 @@ class MagicTensor:
         try:
             return super().__getattribute__(attr)
         except AttributeError:
-            orig = getattr(self.tensor, attr)
+            try:
+                tensor = super().__getattribute__('_tensor')
+            except AttributeError:
+                raise
+
+            orig = getattr(tensor, attr)
             if attr in _SAFE_METHODS:
                 setattr(self, attr, orig)
             elif attr in _SAFE_METHODS_WITH_WRAPPER:
