@@ -263,6 +263,18 @@ class K2CharSet(BaseCharset):
     _CHARS = u'aeioubpdtfvgklmnrszw'
 
 
+@register_charset('iber-latin')
+class IberLatinCharSet(BaseCharset):
+    _CHARS = 'ABCDEGILMNORSTU'
+
+@register_charset('iber')
+class IberCharSet(BaseCharset):
+    _CHARS = '!"$%&-./45689:<BEFGHIMNQRSWX[pvz}~ÒÜêëô→'
+ 
+@register_charset('p_eu')
+class ProtoBasqueCharSet(BaseCharset):
+    _CHARS = 'CHXabcdeghilnoprstuxzüńŕśźɦɫ'
+
 @register_charset('de')
 class DeCharSet(BaseCharset):
 

@@ -35,7 +35,6 @@ class WordlistDataset(Dataset):
         return len(self._words)
 
     @cache(persist=True, full=True)
-    @cache(persist=True, full=True)
     def __getitem__(self, idx):
         word = self._words[idx]
         return Map(word=word, form=word.form, lang=self.lang, char_seq=word.char_seq, id_seq=word.id_seq)

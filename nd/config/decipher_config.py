@@ -20,3 +20,24 @@ class UgaHebSmallNoSpe:
     capacity: int = 3
     dropout: float = 0.3
     warm_up_steps: int = 5
+
+@register
+class IberCoins:
+    lost_lang: str = 'iber'
+    known_lang: str = 'iber-latin'
+    cog_path: str = 'data/iber-latin.coin.cog'
+    num_cognates: int = 16
+    num_epochs_per_M_step: int = 300
+    eval_interval: int = 50
+    check_interval: int = 50
+    num_rounds: int = 30
+    capacity: int = 3
+    dropout: float = 0.3
+    warm_up_steps: int = 10
+    momentum: float = 0.95
+
+@register
+class IberProtoBasque(IberCoins):
+    known_lang: str = 'p_eu'
+    num_cognates: int = 100
+    
