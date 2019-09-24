@@ -43,4 +43,5 @@ class IberProtoBasque(IberCoins):
     lost_lang: str = 'p_eu'
     known_lang: str = 'iber'
     num_cognates: int = 100
+    momentum: float = 0.9
     capacity: int = 1
