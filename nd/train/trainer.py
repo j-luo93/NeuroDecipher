@@ -139,8 +139,10 @@ class Trainer:
         return self._do_M_step_batch(batch, update=update)
 
     def _do_post_M_step(self, evaluator=None):
-        if self.epoch % self.eval_interval == 0 and evaluator is not None:
-            self._do_eval(evaluator)
+        if self.epoch % self.eval_interval == 0:
+            if evaluator is not None:
+                self._do_eval(evaluator)
+            self._do_save()
         if self.epoch % self.check_interval == 0:
             self._do_check()
 
@@ -151,6 +153,8 @@ class Trainer:
         for setting, score in eval_scores.items():
             self.tb_writer.add_scalar(setting, score, global_step=self.epoch)
         self.tb_writer.flush()
+
+    def _do_save(self):
         # Save
         self.save()
         if self.save_all:

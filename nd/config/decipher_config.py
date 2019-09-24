@@ -21,6 +21,7 @@ class UgaHebSmallNoSpe:
     dropout: float = 0.3
     warm_up_steps: int = 5
 
+
 @register
 class IberCoins:
     lost_lang: str = 'iber'
@@ -36,8 +37,10 @@ class IberCoins:
     warm_up_steps: int = 10
     momentum: float = 0.95
 
+
 @register
 class IberProtoBasque(IberCoins):
-    known_lang: str = 'p_eu'
+    lost_lang: str = 'p_eu'
+    known_lang: str = 'iber'
     num_cognates: int = 100
-    
+    capacity: int = 1
