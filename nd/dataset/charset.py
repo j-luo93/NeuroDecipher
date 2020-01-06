@@ -248,6 +248,32 @@ class FrCharSet(BaseCharset):
     _FEATURES = ['capitalization']
 
 
+@register_charset('got')
+class GotCharSet(BaseCharset):
+    
+    _CHARS = u'abdefghijklmnopqrstuwxzþƕ'
+
+
+@register_charset('nhd_ipa')
+class NhdIpaCharSet(BaseCharset):
+
+    _CHARS = u'Tabdefhijklmnoprstuvxyzæçøŋœɐɑɔəɛɜɡɪɱɾʀʁʃʊʏχ'
+
+@register_charset('nhd')
+class NhdCharSet(BaseCharset):
+
+    _CHARS = u"abcdefghijklmnopqrstuvwzßäöü"
+
+@register_charset('germ')
+class NhdCharSet(BaseCharset):
+
+    _CHARS = u'abcdefghijklmnoprstuwzæþ̆'
+
+@register_charset('ae')
+class NhdCharSet(BaseCharset):
+
+    _CHARS = u'abcdefghilmnoprstuwxyæþāēīōūǣȳ'
+
 @register_charset('lost')
 class LostCharSet(BaseCharset):
     _CHARS = u'aeioubpdtfvgklmnrszw'

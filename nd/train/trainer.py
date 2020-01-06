@@ -150,7 +150,7 @@ class Trainer:
         # Tensorboard
         for setting, score in eval_scores.items():
             self.tb_writer.add_scalar(setting, score, global_step=self.epoch)
-        self.tb_writer.flush()
+        #self.tb_writer.flush()
         # Save
         self.save()
         if self.save_all:
