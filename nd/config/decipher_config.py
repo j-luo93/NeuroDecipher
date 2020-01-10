@@ -60,3 +60,20 @@ class GotLemmaAENoPrefix(GotNhdSmall):
     known_lang: str = 'ae'
     cog_path: str = 'data/got_lemma-ae_no_pref.all.cog'
 
+@register
+class GotNhdNDCog(GotNhdSmall):
+    num_cognates: int = 1193
+    cog_path: str = 'data/got-nhd.nd.cog'
+
+@register
+class GotGermNDCog(GotNhdSmall):
+    num_cognates: int = 1908
+    known_lang: str = 'germ'
+    cog_path: str = 'data/got-germ.nd.cog'
+
+@register
+class GotAENDCog(GotNhdSmall):
+    num_cognates: int = 1439
+    known_lang: str = 'ae'
+    cog_path: str = 'data/got-ae.nd.cog'
+

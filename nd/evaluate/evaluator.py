@@ -21,7 +21,7 @@ class EvalSetting:
         return f'lost_{self.lost}__known_{self.known}__mode_{self.mode}__edit_{self.edit}__capacity_{self.capacity}'
 
 
-@use_arguments_as_properties('lost_lang', 'known_lang', 'capacity', 'num_cognates')
+@use_arguments_as_properties('lost_lang', 'known_lang', 'capacity', 'num_cognates', 'log_dir')
 class Evaluator:
 
     def __init__(self, model, data_loader):
@@ -63,6 +63,9 @@ class Evaluator:
             # Magic tensor to the rescue!
             almt = model_ret.valid_log_probs if s.mode == 'mle' else model_ret.flow
             preds = almt.get_best()
+            if s.mode == 'mle':
+                import pickle
+                pickle.dump(preds, open(f'{self.log_dir}/preds.almt.{epoch}', 'wb'))
             acc = self._evaluate_one_setting(preds)
             score = acc / len(preds)
             fmt_score = f'{acc}/{len(preds)}={score:.3f}'

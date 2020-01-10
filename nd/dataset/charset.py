@@ -265,14 +265,19 @@ class NhdCharSet(BaseCharset):
     _CHARS = u"abcdefghijklmnopqrstuvwzßäöü"
 
 @register_charset('germ')
-class NhdCharSet(BaseCharset):
+class GermCharSet(BaseCharset):
 
     _CHARS = u'abcdefghijklmnoprstuwzæþ̆'
 
 @register_charset('ae')
-class NhdCharSet(BaseCharset):
+class AECharSet(BaseCharset):
 
     _CHARS = u'abcdefghilmnoprstuwxyæþāēīōūǣȳ'
+
+@register_charset('ae_ipa')
+class AEIpaCharSet(BaseCharset):
+
+    _CHARS = u'Tabdefghijklmnoprstuvwxyzæçðŋɑɣʃʒθ'
 
 @register_charset('lost')
 class LostCharSet(BaseCharset):
