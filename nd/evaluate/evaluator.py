@@ -59,9 +59,13 @@ class Evaluator:
         eval_scores = dict()
         for s in self._settings:
             batch = self.data_loader.entire_batch
+            # if s.mode != 'mle':
+            #     continue
             model_ret = self.model(batch, mode=s.mode, num_cognates=num_cognates, edit=s.edit, capacity=s.capacity)
             # Magic tensor to the rescue!
             almt = model_ret.valid_log_probs if s.mode == 'mle' else model_ret.flow
+            # import torch; torch.save(almt, 'dump.all')
+            # exit(1)
             preds = almt.get_best()
             if s.mode == 'mle':
                 import pickle

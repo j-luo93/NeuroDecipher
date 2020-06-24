@@ -55,11 +55,16 @@ class Trainer:
         ckpt = torch.load(self.saved_path)
 
         def try_load(name):
-            src = ckpt[name]
+            try:
+                src = ckpt[name]
+            except KeyError as e:
+                logging.error(e)
+                return
+
             dest = getattr(self, name)
             try:
                 dest.load_state_dict(src)
-            except RuntimeError as e:
+            except (RuntimeError, TypeError) as e:
                 logging.error(e)
 
         try_load('model')
@@ -150,7 +155,6 @@ class Trainer:
         # Tensorboard
         for setting, score in eval_scores.items():
             self.tb_writer.add_scalar(setting, score, global_step=self.epoch)
-        #self.tb_writer.flush()
         # Save
         self.save()
         if self.save_all:

@@ -234,6 +234,56 @@ class LinbLatinCharSet(BaseCharset):
     _FEATURES = ['']
 
 
+@register_charset('got')
+class GothicCharSet(BaseCharset):
+
+    _CHARS = u'_abdefghijklmnopqrstuwxz·þƕ'
+    _FEATURES = ['']
+
+
+@register_charset('pgm')
+class ProtoGermanicCharSet(BaseCharset):
+
+    _CHARS = u'abdefghijklmnoprstuwzþ'
+    _FEATURES = ['']
+
+@register_charset('pgm-ipa')
+class ProtoGermanicIpaCharSet(BaseCharset):
+
+    _CHARS = u'abdehijklmnoprstuwxzðŋɡɣɸʷ͡βθ'
+    _FEATURES = ['']
+
+
+@register_charset('non')
+class OldNorseCharSet(BaseCharset):
+
+    _CHARS = u'abdefghijklmnprstuvxzáéíðóöøúýþœ'
+    _FEATURES = ['']
+
+@register_charset('non-ipa')
+class OldNorseIPACharSet(BaseCharset):
+
+    _CHARS = u'abdefhijklmnoprstuvyðøœɒɛɡɣː͡θ'
+    _FEATURES = ['']
+
+
+
+@register_charset('ang')
+class OldEnglishCharSet(BaseCharset):
+
+    _CHARS = u'abcdefghilmnoprstuwxyæþāċēġīōūǣȳ'
+    _FEATURES = ['']
+
+@register_charset('ang-ipa')
+class OldEnglishIpaCharSet(BaseCharset):
+
+    _CHARS = u'bdefhijklmnoprstuvwxyzæçðŋɑɡɣʃʒː͡θ'
+    _FEATURES = ['']
+
+
+
+
+
 @register_charset('minoan')
 class MinoanCharSet(BaseCharset):
 

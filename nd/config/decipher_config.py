@@ -77,3 +77,48 @@ class GotAENDCog(GotNhdSmall):
     known_lang: str = 'ae'
     cog_path: str = 'data/got-ae.nd.cog'
 
+
+@register
+class GothicPgm(UgaHebSmallNoSpe):
+
+    lost_lang: str = 'got'
+    known_lang: str = 'pgm'
+    cog_path: str = 'data/got-pgm.cog'
+    num_cognates: int = 2285
+    num_epochs_per_M_step: int = 250
+    eval_interval: int = 50
+    check_interval: int = 50
+    num_rounds: int = 5
+    inc: int = 500
+
+
+@register
+class GothicNon(GothicPgm):
+    known_lang: str = 'non'
+    cog_path: str = 'data/got-non.cog'
+    num_cognates: int = 1787
+
+
+@register
+class GothicAng(GothicPgm):
+    known_lang: str = 'ang'
+    cog_path: str = 'data/got-ang.cog'
+    num_cognates: int = 2278
+
+@register
+class GothicPgmIpa(GothicPgm):
+
+    known_lang: str = 'pgm-ipa'
+    cog_path: str = 'data/got-pgm_ipa.cog'
+
+
+@register
+class GothicNonIpa(GothicNon):
+    known_lang: str = 'non-ipa'
+    cog_path: str = 'data/got-non_ipa.cog'
+
+
+@register
+class GothicAngIpa(GothicAng):
+    known_lang: str = 'ang-ipa'
+    cog_path: str = 'data/got-ang_ipa.cog'
