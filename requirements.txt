@@ -1,0 +1,11 @@
+cython
+ortools
+cvxopt
+pandas
+prettytable
+tensorflow
+treelib
+enlighten
+pytrie
+colorlog
+numpy
